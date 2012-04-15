@@ -1,0 +1,9 @@
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\ExpenseReportTests.dll
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\ExpenseReportTests.pdb
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\ExpenseReport.dll
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\nunit.framework.dll
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\ExpenseReport.pdb
+C:\Dev\ExpenseReport\ExpenseReportTests\bin\Debug\nunit.framework.xml
+C:\Dev\ExpenseReport\ExpenseReportTests\obj\Debug\ResolveAssemblyReference.cache
+C:\Dev\ExpenseReport\ExpenseReportTests\obj\Debug\ExpenseReportTests.dll
+C:\Dev\ExpenseReport\ExpenseReportTests\obj\Debug\ExpenseReportTests.pdb
