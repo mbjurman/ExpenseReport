@@ -7,7 +7,7 @@ namespace ExpenseReport
     public class Report
     {
         private List<Expense> Expenses = new List<Expense>();
-        private List<Representation> Representations = new List<Representation>();
+        public List<Representation> Representations = new List<Representation>();
 
         public List<Expense> Rows
         {
