@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+        
+    <script type="text/javascript" src="hero.js"></script>
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="span6">
+        <h2>Registrera nytt</h2>
+
+        <a class="btn" data-toggle="modal" href="#myModalExpense">Utlägg</a>
+        <a class="btn" data-toggle="modal" href="#myModalTravelExpense">Reseräkning</a>
+        <a class="btn" data-toggle="modal" href="#myModalRepresentation">Representation</a>
+
+        <div id="myModalExpense" class="modal hide fade" style="display: none; ">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Registrera utlägg</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="select-account">Konto</label>
+                            <div class="controls">
+                                <select id="select-account">
+                                    <option>Kontorsmateriel</option>
+                                    <option>Förbrukningsinventarier</option>
+                                    <option>Övriga personalkostnader</option>
+                                    <option>Friskvårdsbidrag</option>
+                                    <option>Tidningar och fackliteratur</option>
+                                    <option>Flyg</option>
+                                    <option>Taxi</option>
+                                    <option>Övriga resekostnader</option>
+                                    <option>Kost och logi</option>
+                                    <option>Faktureras kund</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="manual-account">Övrigt</label>
+                            <div class="controls">
+                                <input id="manual-account" type="text" class="span3" placeholder="Ange konto fritt om det saknas ovan">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="total-sum">Inkl moms</label>
+                            <div class="controls">
+                                <input id="total-sum" type="text" class="span3" placeholder="Total summa inkl moms">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="vat-only">Varav moms</label>
+                            <div class="controls">
+                                <input id="vat-only" type="text" class="span3" placeholder="Delen av summan som är moms">
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+                <a href="#" class="btn btn-primary" onclick="addCommonExpense()">Lägg till</a>
+            </div>
+        </div>
+
+        <div id="myModalRepresentation" class="modal hide fade" style="display: none; width: 800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Registrera representation</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-place">Ort</label>
+                            <div class="controls">
+                                <input id="rep-place" type="text" class="span3" placeholder="Var skedde representationen?">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-place">Datum</label>
+                            <div class="controls">
+                                <input id="rep-place" type="text" class="span3" placeholder="När skedde representationen?">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-place">Syfte</label>
+                            <div class="controls">
+                                <input id="rep-place" type="text" class="span3" placeholder="Varför skedde representationen?">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-place">Projekt</label>
+                            <div class="controls">
+                                <input id="rep-place" type="text" class="span3" placeholder="">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Projektfas</label>
+                            <div class="controls">
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                                    Projektstart
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                    Pågående projekt
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                                    Projektavslut
+                                </label>
+                            </div>
+                        </div>                            
+                        <div class="control-group">
+                            <label class="control-label">Representationskonto</label>
+                            <div class="controls">
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                                    Internt
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                    Externt
+                                </label>
+                            </div>
+                        </div>                            
+                        <div class="control-group">
+                            <label class="control-label" for="rep-gift"></label>
+                            <div class="controls">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="rep-gift" value="option1">
+                                    Representationen är en gåva
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-gift">Närvarande</label>
+                            <div class="controls">
+                                <table>
+                                    <thead>
+                                        <th>Namn</th>
+                                        <th>Företag</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="text" class="span3"></td>
+                                            <td><input type="text" class="span3"></td>
+                                            <td><i class="icon-remove" onclick=""></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Vara</label>
+                            <div class="controls">
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                                    Lunch, middag eller supé inklusive vin och sprit
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                    Annan måltid (frukost samt barbesök utan samband med måltid)
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                                    Kostnader för teaterbiljetter och dyl
+                                </label>
+                            </div>
+                        </div>                            
+                        <div class="control-group">
+                            <label class="control-label" for="rep-totalsum">Total summa</label>
+                            <div class="controls">
+                                <input id="rep-totalsum" type="text" class="span3" placeholder="">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="rep-vat">Varav moms</label>
+                            <div class="controls">
+                                <input id="rep-vat" type="text" class="span3" placeholder="">
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+                <a href="#" class="btn btn-primary" onclick="addRepresentationExpense()">Lägg till</a>
+            </div>
+        </div>
+
+        <div id="myModalTravelExpense" class="modal hide fade" style="display: none; ">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Registrera reseräkning</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+                <a href="#" class="btn btn-primary" onclick="addCommonExpense()">Lägg till</a>
+            </div>
+        </div>
+      </div>
+      <div class="span8">
+        <h2>Redan registrerade</h2>
+        <table class="table table-striped">
+            <thead>
+                <th>Nr</th>
+                <th>Konto</th>
+                <th>Kostnad</th>
+                <th>Moms</th>
+                <th>Totalt</th>
+            </thead>
+            <tbody id="tablebody">
+                <tr>
+                    <td></td>
+                    <td><a href="#myModalExpense" data-toggle="modal2" onclick="loadFunc(this)">Blalala</a></td>
+                    <td>100</td>
+                    <td>25</td>
+                    <td>125</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+ 
+    <div class="span12">
+        <footer>
+            <p>&copy; Company 2012</p>
+        </footer>
+    </div>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>
