@@ -158,9 +158,15 @@
     <Content Include="bootstrap\js\bootstrap.js" />
     <Content Include="bootstrap\js\bootstrap.min.js" />
     <Content Include="bootstrap\js\jquery.js" />
+    <Content Include="css\style.css" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="hero.js" />
+    <Content Include="expensereport.js" />
+    <Content Include="js\app.js" />
+    <Content Include="js\libs\ember-1.0.pre.js" />
+    <Content Include="js\libs\ember-1.0.pre.min.js" />
+    <Content Include="js\libs\handlebars-1.0.0.beta.6.js" />
+    <Content Include="js\libs\jquery-1.7.2.min.js" />
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
