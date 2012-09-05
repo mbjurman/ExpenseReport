@@ -52,36 +52,29 @@
                             <div class="control-group">
                                 <label class="control-label" for="select-account">Konto</label>
                                 <div class="controls">
-                                    <select id="select-account">
-                                        <option>Kontorsmateriel</option>
-                                        <option>Förbrukningsinventarier</option>
-                                        <option>Övriga personalkostnader</option>
-                                        <option>Friskvårdsbidrag</option>
-                                        <option>Tidningar och fackliteratur</option>
-                                        <option>Flyg</option>
-                                        <option>Taxi</option>
-                                        <option>Övriga resekostnader</option>
-                                        <option>Kost och logi</option>
-                                        <option>Faktureras kund</option>
-                                    </select>
+  {{view Ember.Select
+         contentBinding="App.accountController"
+         selectionBinding="App.EditedExpense.SelectedAccount"
+         optionLabelPath="content.Name"
+         optionValuePath="content.Nr"}}
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label" for="manual-account">Övrigt</label>
                                 <div class="controls">
-                                    <input id="manual-account" type="text" class="span3" placeholder="Ange konto fritt om det saknas ovan" {{bindAttr value="App.EditedExpense.Account"}}>
+                                    {{view Ember.TextField valueBinding="App.EditedExpense.OtherAccount" class="span3" placeholder="Ange konto fritt om det saknas ovan" }}
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label" for="total-sum">Inkl moms</label>
                                 <div class="controls">
-                                    <input id="total-sum" type="text" class="span3" placeholder="Total summa inkl moms" {{bindAttr value="App.EditedExpense.Total"}}>
+                                    {{view Ember.TextField valueBinding="App.EditedExpense.Total" class="span3" placeholder="Total summa inkl moms" }}
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label" for="vat-only">Varav moms</label>
                                 <div class="controls">
-                                    <input id="vat-only" type="text" class="span3" placeholder="Delen av summan som är moms" {{bindAttr value="App.EditedExpense.VAT"}}>
+                                    {{view Ember.TextField valueBinding="App.EditedExpense.VAT" class="span3" placeholder="Delen av summan som är moms" }}
                                 </div>
                             </div>
                         </fieldset>
@@ -249,7 +242,7 @@
               {{#each App.MainPage.Expenses}}
                 <tr>
                     <td>{{No}}</td>
-                    <td><a href="#myModalExpense" onclick="loadFunc(this)">{{Account}}</a></td>
+                    <td><a href="#myModalExpense" onclick="loadFunc(this)">{{AccountDisplay}}</a></td>
                     <td>{{Cost}}</td>
                     <td>{{VAT}}</td>
                     <td>{{Total}}</td>
@@ -270,7 +263,7 @@
 
 
     <!-- The missing protocol means that it will match the current protocol, either http or https. If running locally, we use the local jQuery. -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
     <script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
     <script src="js/libs/ember-1.0.pre.min.js"></script>
