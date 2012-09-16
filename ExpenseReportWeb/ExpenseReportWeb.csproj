@@ -139,25 +139,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bootstrap\css\bootstrap-responsive.css" />
-    <Content Include="bootstrap\css\bootstrap.css" />
-    <Content Include="bootstrap\css\docs.css" />
-    <Content Include="bootstrap\js\application.js" />
-    <Content Include="bootstrap\js\bootstrap-alert.js" />
-    <Content Include="bootstrap\js\bootstrap-button.js" />
-    <Content Include="bootstrap\js\bootstrap-carousel.js" />
-    <Content Include="bootstrap\js\bootstrap-collapse.js" />
-    <Content Include="bootstrap\js\bootstrap-dropdown.js" />
-    <Content Include="bootstrap\js\bootstrap-modal.js" />
-    <Content Include="bootstrap\js\bootstrap-popover.js" />
-    <Content Include="bootstrap\js\bootstrap-scrollspy.js" />
-    <Content Include="bootstrap\js\bootstrap-tab.js" />
-    <Content Include="bootstrap\js\bootstrap-tooltip.js" />
-    <Content Include="bootstrap\js\bootstrap-transition.js" />
-    <Content Include="bootstrap\js\bootstrap-typeahead.js" />
-    <Content Include="bootstrap\js\bootstrap.js" />
-    <Content Include="bootstrap\js\bootstrap.min.js" />
-    <Content Include="bootstrap\js\jquery.js" />
     <Content Include="css\bootstrap\bootstrap-responsive.css" />
     <Content Include="css\bootstrap\bootstrap.css" />
     <Content Include="css\bootstrap\docs.css" />
@@ -193,7 +174,6 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bootstrap\js\README.md" />
     <Content Include="web.config" />
     <Content Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
