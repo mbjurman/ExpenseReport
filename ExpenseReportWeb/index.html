@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <!--[if lt IE 7 ]> <html lang="en" class="ie6"> <![endif]--> <!--[if IE 7 ]>    <html lang="en" class="ie7"> <![endif]--> <!--[if IE 8 ]>    <html lang="en" class="ie8"> <![endif]--> <!--[if IE 9 ]>    <html lang="en" class="ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     
-    <title>Bootstrap, from Twitter</title>
+    <title>Expense report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
         
-    <script type="text/javascript" src="expensereport.js"></script>
-
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="css/style.css?v=2">
@@ -20,271 +18,268 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le styles -->
-    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
     <style type="text/css">
       body {
         padding-top: 60px;
         padding-bottom: 40px;
       }
     </style>
-    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-  </head>
+    <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
 
-  <body>
+	<script type="text/x-handlebars" data-template-name="expenseEditViewForm">
+		{{#with App.editedExpense}}
+			<form class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="select-account">Konto</label>
+						<div class="controls">
+							{{view Ember.Select
+								contentBinding="App.accountController"
+								selectionBinding="App.editedExpense.SelectedAccount"
+								optionLabelPath="content.Name"
+								optionValuePath="content.Nr" }}
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="manual-account">Övrigt</label>
+						<div class="controls">
+							{{view Ember.TextField valueBinding="App.editedExpense.OtherAccount" class="span3" placeholder="Ange konto fritt om det saknas ovan" }}
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="total-sum">Inkl moms</label>
+						<div class="controls">
+							{{view Ember.TextField valueBinding="App.editedExpense.Total" class="span3" placeholder="Total summa inkl moms" }}
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="vat-only">Varav moms</label>
+						<div class="controls">
+							{{view Ember.TextField valueBinding="App.editedExpense.VAT" class="span3" placeholder="Delen av summan som är moms" }}
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		{{/with}}
+	</script>    
+</head>
+
+<body>
     <div class="container">
-      <div class="span6">
-        <h2>Registrera</h2>
+        <div class="span6">
+			<h2>Registrera</h2>
+	
+			<a class="btn" data-toggle="modal" href="#myModalExpense">Utlägg</a>
+			<a class="btn" data-toggle="modal" href="#myModalTravelExpense">Reseräkning</a>
+			<a class="btn" data-toggle="modal" href="#myModalRepresentation">Representation</a>
+	
+			<div id="myModalExpense" class="modal hide fade" style="display: none; ">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<h3>Registrera utlägg</h3>
+				</div>
+				<div id="expense-edit-form-container" class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<script type="text/x-handlebars">
+					{{#with App.editedExpense}}
+					{{#view App.expenseEditView contentBinding="this"}}
+					<a href="#" class="btn btn-primary" {{action "add"}}>Lägg till</a>
+					{{/view}}
+					{{/with}}
+					</script>		
+					<a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+				</div>
+			</div>
+	
+			<div id="myModalRepresentation" class="modal hide fade" style="display: none; width: 800px;">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<h3>Registrera representation</h3>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="rep-place">Ort</label>
+								<div class="controls">
+									<input id="rep-place" type="text" class="span3" placeholder="Var skedde representationen?">
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="rep-place">Datum</label>
+								<div class="controls">
+									<input id="rep-place" type="text" class="span3" placeholder="När skedde representationen?">
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="rep-place">Syfte</label>
+								<div class="controls">
+									<input id="rep-place" type="text" class="span3" placeholder="Varför skedde representationen?">
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="rep-place">Projekt</label>
+								<div class="controls">
+									<input id="rep-place" type="text" class="span3" placeholder="">
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">Projektfas</label>
+								<div class="controls">
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+										Projektstart
+									</label>
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+										Pågående projekt
+									</label>
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+										Projektavslut
+									</label>
+								</div>
+							</div>                            
+							<div class="control-group">
+								<label class="control-label">Representationskonto</label>
+								<div class="controls">
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+										Internt
+									</label>
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+										Externt
+									</label>
+								</div>
+							</div>                            
+							<div class="control-group">
+								<label class="control-label" for="rep-gift"></label>
+								<div class="controls">
+									<label class="checkbox">
+										<input type="checkbox" id="rep-gift" value="option1">
+										Representationen är en gåva
+									</label>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="rep-gift">Närvarande</label>
+								<div class="controls">
+									<table>
+										<thead>
+											<th>Namn</th>
+											<th>Företag</th>
+										</thead>
+										<tbody>
+											<tr>
+												<td><input type="text" class="span3"></td>
+												<td><input type="text" class="span3"></td>
+												<td><i class="icon-remove" onclick=""></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">Vara</label>
+								<div class="controls">
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+										Lunch, middag eller supé inklusive vin och sprit
+									</label>
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+										Annan måltid (frukost samt barbesök utan samband med måltid)
+									</label>
+									<label class="radio">
+										<input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+										Kostnader för teaterbiljetter och dyl
+									</label>
+								</div>
+							</div>                            
+							<div class="control-group">
+								<label class="control-label" for="rep-totalsum">Total summa</label>
+								<div class="controls">
+									<input id="rep-totalsum" type="text" class="span3" placeholder="">
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="rep-vat">Varav moms</label>
+								<div class="controls">
+									<input id="rep-vat" type="text" class="span3" placeholder="">
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+					<a href="#" class="btn btn-primary" onclick="addRepresentationExpense()">Lägg till</a>
+				</div>
+			</div>
 
-        <a class="btn" data-toggle="modal" href="#myModalExpense">Utlägg</a>
-        <a class="btn" data-toggle="modal" href="#myModalTravelExpense">Reseräkning</a>
-        <a class="btn" data-toggle="modal" href="#myModalRepresentation">Representation</a>
-
-        <div id="myModalExpense" class="modal hide fade" style="display: none; ">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Registrera utlägg</h3>
-            </div>
-            <div class="modal-body">
-                <script type="text/x-handlebars">
-                    <form class="form-horizontal">
-                        <fieldset>
-                            <div class="control-group">
-                                <label class="control-label" for="select-account">Konto</label>
-                                <div class="controls">
-  {{view Ember.Select
-         contentBinding="App.accountController"
-         selectionBinding="App.EditedExpense.SelectedAccount"
-         optionLabelPath="content.Name"
-         optionValuePath="content.Nr"}}
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="manual-account">Övrigt</label>
-                                <div class="controls">
-                                    {{view Ember.TextField valueBinding="App.EditedExpense.OtherAccount" class="span3" placeholder="Ange konto fritt om det saknas ovan" }}
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="total-sum">Inkl moms</label>
-                                <div class="controls">
-                                    {{view Ember.TextField valueBinding="App.EditedExpense.Total" class="span3" placeholder="Total summa inkl moms" }}
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="vat-only">Varav moms</label>
-                                <div class="controls">
-                                    {{view Ember.TextField valueBinding="App.EditedExpense.VAT" class="span3" placeholder="Delen av summan som är moms" }}
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
-                </script>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
-                <a href="#" class="btn btn-primary" onclick="addCommonExpense()">Lägg till</a>
-            </div>
-        </div>
-
-        <div id="myModalRepresentation" class="modal hide fade" style="display: none; width: 800px;">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Registrera representation</h3>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal">
-                    <fieldset>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-place">Ort</label>
-                            <div class="controls">
-                                <input id="rep-place" type="text" class="span3" placeholder="Var skedde representationen?">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-place">Datum</label>
-                            <div class="controls">
-                                <input id="rep-place" type="text" class="span3" placeholder="När skedde representationen?">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-place">Syfte</label>
-                            <div class="controls">
-                                <input id="rep-place" type="text" class="span3" placeholder="Varför skedde representationen?">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-place">Projekt</label>
-                            <div class="controls">
-                                <input id="rep-place" type="text" class="span3" placeholder="">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Projektfas</label>
-                            <div class="controls">
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
-                                    Projektstart
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                                    Pågående projekt
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
-                                    Projektavslut
-                                </label>
-                            </div>
-                        </div>                            
-                        <div class="control-group">
-                            <label class="control-label">Representationskonto</label>
-                            <div class="controls">
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
-                                    Internt
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                                    Externt
-                                </label>
-                            </div>
-                        </div>                            
-                        <div class="control-group">
-                            <label class="control-label" for="rep-gift"></label>
-                            <div class="controls">
-                                <label class="checkbox">
-                                    <input type="checkbox" id="rep-gift" value="option1">
-                                    Representationen är en gåva
-                                </label>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-gift">Närvarande</label>
-                            <div class="controls">
-                                <table>
-                                    <thead>
-                                        <th>Namn</th>
-                                        <th>Företag</th>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="text" class="span3"></td>
-                                            <td><input type="text" class="span3"></td>
-                                            <td><i class="icon-remove" onclick=""></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Vara</label>
-                            <div class="controls">
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
-                                    Lunch, middag eller supé inklusive vin och sprit
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                                    Annan måltid (frukost samt barbesök utan samband med måltid)
-                                </label>
-                                <label class="radio">
-                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
-                                    Kostnader för teaterbiljetter och dyl
-                                </label>
-                            </div>
-                        </div>                            
-                        <div class="control-group">
-                            <label class="control-label" for="rep-totalsum">Total summa</label>
-                            <div class="controls">
-                                <input id="rep-totalsum" type="text" class="span3" placeholder="">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="rep-vat">Varav moms</label>
-                            <div class="controls">
-                                <input id="rep-vat" type="text" class="span3" placeholder="">
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
-                <a href="#" class="btn btn-primary" onclick="addRepresentationExpense()">Lägg till</a>
-            </div>
-        </div>
-
-        <div id="myModalTravelExpense" class="modal hide fade" style="display: none; ">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Registrera reseräkning</h3>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Avbryt</a>
-                <a href="#" class="btn btn-primary" onclick="addCommonExpense()">Lägg till</a>
-            </div>
-        </div>
-      </div>
-      <div class="span8">
-        <h2>Redan registrerade</h2>
-              <script type="text/x-handlebars">
-        <table class="table table-striped">
-            <thead>
-                <th>Nr</th>
-                <th>Konto</th>
-                <th>Kostnad</th>
-                <th>Moms</th>
-                <th>Totalt</th>
-            </thead>
-            <tbody id="tablebody">
-              {{#each App.MainPage.Expenses}}
-                <tr>
-                    <td>{{No}}</td>
-                    <td><a href="#myModalExpense" onclick="loadFunc(this)">{{AccountDisplay}}</a></td>
-                    <td>{{Cost}}</td>
-                    <td>{{VAT}}</td>
-                    <td>{{Total}}</td>
-                </tr>
-              {{/each}}
-            </tbody>
-        </table>
-              </script>
-      </div>
- 
-    <div class="span12">
-        <footer>
-            <p>&copy; Company 2012</p>
-        </footer>
+			<div id="myModalTravelExpense" class="modal hide fade" style="display: none; ">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<h3>Registrera reseräkning</h3>
+				</div>
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<a href="#" class="btn" data-dismiss="modal">Avbryt</a>
+					<a href="#" class="btn btn-primary" onclick="addCommonExpense()">Lägg till</a>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="span8">
+			<h2>Redan registrerade</h2>
+			<script type="text/x-handlebars">
+			<table class="table table-striped">
+				<thead>
+					<th>Nr</th>
+					<th>Konto</th>
+					<th>Totalt</th>
+					<th>Varav moms</th>
+				</thead>
+				<tbody id="tablebody">
+				  {{#each App.mainPage.Expenses}}
+				  {{#view App.expenseListItemView contentBinding="this"}}
+					<tr>
+						<td>{{No}}</td>
+						<td><a href="#" {{action "edit"}}>{{AccountDisplay}}</a></td>
+						<td>{{Total}}</td>
+						<td>{{VAT}}</td>
+					</tr>
+				  {{/view}}
+				  {{/each}}
+				</tbody>
+			</table>
+			</script>
+		</div>
     </div>
 
-    </div> <!-- /container -->
 
-
-    <!-- The missing protocol means that it will match the current protocol, either http or https. If running locally, we use the local jQuery. -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
-    <script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
-    <script src="js/libs/ember-1.0.pre.min.js"></script>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/ember/handlebars-1.0.0.beta.6.js"></script>
+    <script src="js/ember/ember-1.0.pre.min.js"></script>
     <script src="js/app.js"></script>
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="bootstrap/js/jquery.js"></script>
-    <script src="bootstrap/js/bootstrap-transition.js"></script>
-    <script src="bootstrap/js/bootstrap-alert.js"></script>
-    <script src="bootstrap/js/bootstrap-modal.js"></script>
-    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
-    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
-    <script src="bootstrap/js/bootstrap-tab.js"></script>
-    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
-    <script src="bootstrap/js/bootstrap-popover.js"></script>
-    <script src="bootstrap/js/bootstrap-button.js"></script>
-    <script src="bootstrap/js/bootstrap-collapse.js"></script>
-    <script src="bootstrap/js/bootstrap-carousel.js"></script>
-    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="js/bootstrap/bootstrap-transition.js"></script>
+    <script src="js/bootstrap/bootstrap-alert.js"></script>
+    <script src="js/bootstrap/bootstrap-modal.js"></script>
+    <script src="js/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap/bootstrap-tab.js"></script>
+    <script src="js/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap/bootstrap-popover.js"></script>
+    <script src="js/bootstrap/bootstrap-button.js"></script>
+    <script src="js/bootstrap/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap/bootstrap-typeahead.js"></script>
 
-  </body>
+</body>
 </html>
