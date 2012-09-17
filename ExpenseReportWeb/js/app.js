@@ -1,7 +1,7 @@
 var App = Em.Application.create({
 	ready: function() {
 		App.rootContainer.appendTo("#container");
-		App.rootContainer.set('currentView', App.MainPageView.create());
+		App.rootContainer.set('currentView', App.MainPageView.create({content: App.mainPage}));
 	}
 });
 
@@ -18,13 +18,30 @@ App.RepresentationType = Ember.Object.extend({
 	name: null
 });
 
+App.RepresentationArticleType = Ember.Object.extend({
+	id: null,
+	name: null
+});
+
+App.ProjectPhase = Ember.Object.extend({
+	id: null,
+	name: null
+});
+
+App.RepresentationTypes = Ember.Object.create({
+	Intern: 
+		App.RepresentationType.create({id: 1, name: "Intern"}),
+	Extern:
+		App.RepresentationType.create({id: 2, name: "Extern"})
+});
+
 App.RepresentationArticleTypes = Em.Object.create({
 	Lunch:
-		App.RepresentationType.create({id: 1, name: "Lunch, middag eller supé inklusive vin och sprit"}),
+		App.RepresentationArticleType.create({id: 1, name: "Lunch, middag eller supé inklusive vin och sprit"}),
 	Breakfast:
-		App.RepresentationType.create({id: 2, name: "Annan måltid (frukost samt barbesök utan samband med måltid)"}),
+		App.RepresentationArticleType.create({id: 2, name: "Annan måltid (frukost samt barbesök utan samband med måltid)"}),
 	Other:
-		App.RepresentationType.create({id: 3, name: "Kostnader för teaterbiljetter och dyl"})
+		App.RepresentationArticleType.create({id: 3, name: "Kostnader för teaterbiljetter och dyl"})
 });
 
 App.ExpenseTypes = Em.Object.create({
@@ -50,6 +67,15 @@ App.ExpenseTypes = Em.Object.create({
 		App.Account.create({nr: 14, name: "Faktureras kund" })
 });
 
+App.ProjectPhases = Em.Object.create({
+	Startup: 
+		App.ProjectPhase.create({id: 1, name: "Uppstart"}),
+	Ongoing:
+		App.ProjectPhase.create({id: 2, name: "Pågående"}),
+	Closing:
+		App.ProjectPhase.create({id: 3, name: "Avslut"})
+});
+
 App.Expense = Em.Object.extend({
     nr: 0,
     selectedAccount: null,
@@ -69,7 +95,8 @@ App.Representation = App.Expense.extend({
 	date: "",
 	purpose: "",
 	project: "",
-	projectPhase: "",
+	projectPhase: null,
+	representationType: "",
 	isGift: false,
 	present: [],
 	article: null
@@ -80,17 +107,23 @@ App.Representation = App.Expense.extend({
  * Models
  */
 App.mainPage = Em.Object.create({
-    msg: "test",
-    Expenses: [
+    expenses: [
         App.Expense.create({
             nr: 1,
             selectedAccount: null,
-            otherAccount: "blaha",
+            otherAccount: "testsasdf",
             vat: 25,
             total: 125,
         }),
+        App.Expense.create({
+            nr: 2,
+            selectedAccount: App.ExpenseTypes.WellnessGrants,
+            otherAccount: null,
+            vat: 200,
+            total: 1000,
+        }),
         App.Representation.create({
-        	nr: 2,
+        	nr: 3,
         	selectedAccount: App.ExpenseTypes.Taxi,
         	otherAccount: null,
         	vat: 100,
@@ -99,32 +132,22 @@ App.mainPage = Em.Object.create({
 			date: "2012-06-01",
 			purpose: "Knyta kontakter",
 			project: "Project X",
-			projectPhase: "Startup",
+			projectPhase: App.ProjectPhases.Closing,
+			representationType: App.RepresentationTypes.Extern,
 			isGift: true,
-			present: ["Sune Sunesson, X AB", "Anders Andersson, Y AB"],
+			present: "Sune Sunesson, X AB",
 			article: App.RepresentationArticleTypes.Lunch
         })
     ]
-});
-
-App.editedExpense = App.Expense.create({
-    nr: 0,
-    selectedAccount: null,
-    otherAccount: "",
-    vat: "",
-    total: ""
 });
 
 
 /*
  * Controllers
  */
-App.selectedAccountController = Ember.Object.create({
-    account: null
-});
-
 App.accountController = Ember.ArrayController.create({
     content: [
+    	null,
 		App.ExpenseTypes.OfficeSupplies, 
 		App.ExpenseTypes.ConsumptionEquipment, 
 		App.ExpenseTypes.OtherStaffExpenses,
@@ -138,6 +161,32 @@ App.accountController = Ember.ArrayController.create({
     ]
 });
 
+App.representationTypeController = Ember.ArrayController.create({
+	content: [
+		null,
+		App.RepresentationTypes.Intern,
+		App.RepresentationTypes.Extern
+	]
+});
+
+App.representationArticleTypeController = Ember.ArrayController.create({
+	content: [
+		null,
+		App.RepresentationArticleTypes.Lunch,
+		App.RepresentationArticleTypes.Breakfast,
+		App.RepresentationArticleTypes.Other
+	]
+});
+
+App.projectPhaseController = Ember.ArrayController.create({
+	content: [
+		null,
+		App.ProjectPhases.Startup,
+		App.ProjectPhases.Ongoing,
+		App.ProjectPhases.Closing
+	]
+});
+
 
 /*
  * Views
@@ -148,6 +197,7 @@ App.rootContainer = Ember.ContainerView.create({
 
 App.MainPageView = Ember.View.extend({
 	templateName: 'main-page',
+	content: App.mainPage,
 	newExpense: function() {
 		App.rootContainer.set('currentView', App.ExpenseEditView.create({
 			content: App.Expense.create()
@@ -155,42 +205,43 @@ App.MainPageView = Ember.View.extend({
 	}
 });
 
-App.ExpenseEditView = Ember.View.extend({
+App.EditView = Ember.View.extend({
+	hide: function() {
+		App.rootContainer.set('currentView', App.MainPageView.create());
+	}
+})
+
+App.ExpenseEditView = App.EditView.extend({
 	templateName: 'expense-editor',
 	content: null,
     add: function() {
-		var model = this.get('content');
-	    App.mainPage.Expenses.pushObject(
-			App.Expense.create({
-				nr: model.get('nr'),
-				selectedAccount: model.get('selectedAccount'),
-				otherAccount: model.get('otherAccount'),
-				cost: model.get('cost'),
-				vat: model.get('vat'),
-				total: model.get('total')
-			}));
-
-		App.rootContainer.set('currentView', App.MainPageView.create());
+	    App.mainPage.Expenses.pushObject(this.get('content'));
+		this.hide();
 	},
 	cancel: function() {
-		App.rootContainer.set('currentView', App.MainPageView.create());
+		this.hide();
+	},
+	keyDown: function(event) {
+		if (event.keyCode === 27)
+		{
+			this.hide();
+		}
 	}
 })
 
-App.RepresentationEditView = Ember.View.extend({
+App.RepresentationEditView = App.EditView.extend({
 	templateName: 'representation-editor',
 	content: null,
 	add: function() {
-		App.rootContainer.set('currentView', App.MainPageView.create());		
+		this.hide();
 	},
 	cancel: function() {
-		App.rootContainer.set('currentView', App.MainPageView.create());
+		this.hide();
 	}
 })
 
-App.expenseListItemView = Ember.View.extend({
+App.ExpenseListItemView = Ember.View.extend({
     content: null,
-    formView: null,
 	edit: function(event) {
 		var model = this.get('content');
 
