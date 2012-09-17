@@ -1,4 +1,9 @@
-var App = Em.Application.create();
+var App = Em.Application.create({
+	ready: function() {
+		App.rootContainer.appendTo("#container");
+		App.rootContainer.set('currentView', App.MainPageView.create());
+	}
+});
 
 /*
  * Types
@@ -205,9 +210,4 @@ App.expenseListItemView = Ember.View.extend({
 });
 
 
-/*
- * Startup
- */
 
-App.rootContainer.appendTo("#container");
-App.rootContainer.set('currentView', App.MainPageView.create());
