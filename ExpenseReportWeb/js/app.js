@@ -1,4 +1,5 @@
 var App = Em.Application.create({
+	rootContainer: null,
 	ready: function() {
 		App.rootContainer.appendTo("#container");
 		App.rootContainer.set('currentView', App.MainPageView.create({content: App.mainPage}));
@@ -64,7 +65,11 @@ App.ExpenseTypes = Em.Object.create({
 	FoodAndAccommodation: 
 		App.Account.create({nr: 13, name: "Kost och logi" }),
 	BillableExpenses: 
-		App.Account.create({nr: 14, name: "Faktureras kund" })
+		App.Account.create({nr: 14, name: "Faktureras kund" }),
+	InternalRepresentation:
+		App.Account.create({nr: 15, name: "Intern representation"}),
+	ExternalRepresentation:
+		App.Account.create({nr: 16, name: "Extern representation"})
 });
 
 App.ProjectPhases = Em.Object.create({
@@ -76,9 +81,12 @@ App.ProjectPhases = Em.Object.create({
 		App.ProjectPhase.create({id: 3, name: "Avslut"})
 });
 
-App.Expense = Em.Object.extend({
-    nr: 0,
-    selectedAccount: null,
+App.Expense = Em.Object.extend(Ember.Copyable, {
+    nr: null,
+    selectedAccountValue: null,
+    selectedAccount: function() {
+    	return this.get('selectedAccountValue');
+    }.property(),
     otherAccount: "",
     vat: "",
     total: "",
@@ -87,10 +95,19 @@ App.Expense = Em.Object.extend({
     		return this.get('selectedAccount').name;
     	else
     		return this.get('otherAccount');
-    }.property()
+    }.property('otherAccount', 'selectedAccount'),
+    copy: function() {
+    	return App.Expense.create({
+			nr: this.get('nr'),
+			selectedAccountValue: this.get('selectedAccountValue'),
+			otherAccount: this.get('otherAccount'),
+			vat: this.get('vat'),
+			total: this.get('total')
+    	})
+    }
 });
 
-App.Representation = App.Expense.extend({
+App.Representation = App.Expense.extend(Ember.Copyable, {
 	place: "",
 	date: "",
 	purpose: "",
@@ -99,32 +116,52 @@ App.Representation = App.Expense.extend({
 	representationType: "",
 	isGift: false,
 	present: [],
-	article: null
+	article: null,
+	selectedAccount: function() {
+		if (this.get('representationType') === App.RepresentationTypes.Intern)
+			return App.ExpenseTypes.InternalRepresentation;
+		else
+			return App.ExpenseTypes.ExternalRepresentation;
+	}.property('representationType'),
+	copy: function() {
+		return App.Representation.create({
+			nr: this.get('nr'),
+			selectedAccountValue: this.get('selectedAccountValue'),
+			otherAccount: this.get('otherAccount'),
+			vat: this.get('vat'),
+			total: this.get('total'),
+			place: this.get('place'),
+			date: this.get('date'),
+			purpose: this.get('purpose'),
+			project: this.get('project'),
+			projectPhase: this.get('projectPhase'),
+			representationType: this.get('representationType'),
+			isGift: this.get('isGift'),
+			present: this.get('present'),
+			article: this.get('article')
+		})
+	}
 });
 
-
-/*
- * Models
- */
 App.mainPage = Em.Object.create({
-    expenses: [
+	expenses: [
         App.Expense.create({
             nr: 1,
-            selectedAccount: null,
+            selectedAccountValue: null,
             otherAccount: "testsasdf",
             vat: 25,
             total: 125,
         }),
         App.Expense.create({
             nr: 2,
-            selectedAccount: App.ExpenseTypes.WellnessGrants,
+            selectedAccountValue: App.ExpenseTypes.WellnessGrants,
             otherAccount: null,
             vat: 200,
             total: 1000,
         }),
         App.Representation.create({
         	nr: 3,
-        	selectedAccount: App.ExpenseTypes.Taxi,
+        	selectedAccountValue: App.ExpenseTypes.Taxi,
         	otherAccount: null,
         	vat: 100,
         	total: 400,
@@ -202,20 +239,36 @@ App.MainPageView = Ember.View.extend({
 		App.rootContainer.set('currentView', App.ExpenseEditView.create({
 			content: App.Expense.create()
 		}));
+	},
+	newRepresentation: function() {
+		App.rootContainer.set('currentView', App.RepresentationEditView.create({
+			content: App.Representation.create()
+		}));
 	}
 });
 
 App.EditView = Ember.View.extend({
-	hide: function() {
-		App.rootContainer.set('currentView', App.MainPageView.create());
-	}
-})
-
-App.ExpenseEditView = App.EditView.extend({
-	templateName: 'expense-editor',
 	content: null,
-    add: function() {
-	    App.mainPage.Expenses.pushObject(this.get('content'));
+	add: function() {
+		var model = this.get('content');
+		if (model.nr === null)
+		{
+			App.mainPage.expenses.pushObject(model);
+		}
+		else
+		{
+			App.mainPage.expenses = jQuery.grep(
+				App.mainPage.expenses,
+				function(n, i) {
+					return n.nr !== model.nr
+				});
+			App.mainPage.expenses.pushObject(model);
+			App.mainPage.expenses.sort(function(a, b) {
+					var anr = a.get('nr');
+					var bnr = b.get('nr');
+					return ((anr < bnr) ? -1 : ((anr > bnr) ? 1 : 0));
+				});
+		}
 		this.hide();
 	},
 	cancel: function() {
@@ -226,37 +279,44 @@ App.ExpenseEditView = App.EditView.extend({
 		{
 			this.hide();
 		}
-	}
-})
+	},
+	hide: function() {
+		App.rootContainer.set('currentView', App.MainPageView.create());
+	},
+	show: function() {
+		App.rootContainer.set('currentView', this);
+	},
+	submitText: "Lägg till"
+});
+
+App.ExpenseEditView = App.EditView.extend({
+	templateName: 'expense-editor'
+});
 
 App.RepresentationEditView = App.EditView.extend({
-	templateName: 'representation-editor',
-	content: null,
-	add: function() {
-		this.hide();
-	},
-	cancel: function() {
-		this.hide();
-	}
-})
+	templateName: 'representation-editor'
+});
 
 App.ExpenseListItemView = Ember.View.extend({
     content: null,
 	edit: function(event) {
 		var model = this.get('content');
+		var modelcopy = model.copy();
+		var dialog;
 
-		if (model instanceof App.Representation)
+		if (modelcopy instanceof App.Representation)
 		{
-			App.rootContainer.set('currentView', App.RepresentationEditView.create({
-				content: model
-			}));
+			dialog = App.RepresentationEditView.create({ content: modelcopy });
+			dialog.show();
+			
 		}
-		else if (model instanceof App.Expense)
+		else if (modelcopy instanceof App.Expense)
 		{
-			App.rootContainer.set('currentView', App.ExpenseEditView.create({
-				content: model
-			}));
+			dialog = App.ExpenseEditView.create({ content: modelcopy });
+			App.rootContainer.set('currentView', dialog);
 		}
+
+		dialog.submitText = "Uppdatera";
 	}
 });
 
