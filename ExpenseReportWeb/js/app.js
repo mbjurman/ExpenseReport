@@ -94,15 +94,16 @@ App.Expense = Em.Object.extend(Ember.Copyable, {
     selectedAccountValue: null,
     selectedAccount: function() {
     	return this.get('selectedAccountValue');
-    }.property(),
+    }.property('selectedAccountValue'),
     otherAccount: "",
     vat: "",
     total: "",
     accountDisplay: function() {
-        if (Ember.empty(this.get('otherAccount')))
+        if (this.get('selectedAccount') != null)
     		return this.get('selectedAccount').name;
-    	else
+    	else if (!Ember.empty(this.get('otherAccount')))
     		return this.get('otherAccount');
+    	return "";
     }.property('otherAccount', 'selectedAccount'),
     copy: function() {
     	return App.Expense.create({
@@ -124,7 +125,7 @@ App.Expense = Em.Object.extend(Ember.Copyable, {
     		return false;
 
     	return true;
-    }
+    }.property('selectedAccountValue', 'otherAccount', 'total', 'vat')
 });
 
 App.Representation = App.Expense.extend(Ember.Copyable, {
@@ -305,16 +306,19 @@ App.EditView = Ember.View.extend({
 	content: null,
 	defaultFocusElement: null,
 	add: function() {
-		var model = this.get('content');
-		if (model.nr === null)
+		if (this.get('isValid'))
 		{
-			App.expenseController.add(model);
+			var model = this.get('content');
+			if (model.nr === null)
+			{
+				App.expenseController.add(model);
+			}
+			else
+			{
+				App.expenseController.update(model);
+			}
+			this.hide();
 		}
-		else
-		{
-			App.expenseController.update(model);
-		}
-		this.hide();
 	},
 	cancel: function() {
 		this.hide();
@@ -331,10 +335,10 @@ App.EditView = Ember.View.extend({
 	show: function() {
 		App.rootContainer.set('currentView', this);
 	},
+	isValidBinding: 'content.isValid',
 	isDisabled: function() {
-		var model = this.get('content');
-		return !model.isValid;
-	}.property('content.isValid'),
+		return !this.get('isValid');
+	}.property('isValid'),
 	submitText: "Lägg till"
 });
 
