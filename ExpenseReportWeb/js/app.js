@@ -6,6 +6,14 @@ var App = Em.Application.create({
 	}
 });
 
+App.rootContainer = Ember.ContainerView.create({
+	childViews: [],
+	didInsertElement: function() {
+	    this._super();
+	    this.$('input:first').focus();
+	}
+});
+
 /*
  * Types
  */
@@ -104,6 +112,18 @@ App.Expense = Em.Object.extend(Ember.Copyable, {
 			vat: this.get('vat'),
 			total: this.get('total')
     	})
+    },
+    isValid: function() {
+    	if (Ember.empty(this.get('accountDisplay')) && this.get('selectedAccountValue') === null)
+    		return false;
+
+    	if (Ember.empty(this.get('total')))
+    		return false;
+
+    	if (Ember.empty(this.get('vat')))
+    		return false;
+
+    	return true;
     }
 });
 
@@ -143,8 +163,12 @@ App.Representation = App.Expense.extend(Ember.Copyable, {
 	}
 });
 
-App.mainPage = Em.Object.create({
-	expenses: [
+
+/*
+ * Controllers
+ */
+App.expenseController = Ember.ArrayController.create({
+	content: [
         App.Expense.create({
             nr: 1,
             selectedAccountValue: null,
@@ -175,13 +199,47 @@ App.mainPage = Em.Object.create({
 			present: "Sune Sunesson, X AB",
 			article: App.RepresentationArticleTypes.Lunch
         })
-    ]
-});
+    ],
+    removeByNr: function(arr, nr) {
+		return jQuery.grep(
+			arr,
+			function(n, i) {
+				return n.nr !== nr
+			});
+    },
+    resetNumbers: function(arr) {
+		var counter = 1;
+		return jQuery.map(arr, function(n,i){
+			n.set('nr', counter);
+			counter = counter + 1; 
+			return n;
+		});
+    },
+    sort: function(arr) {
+		arr.sort(function(a, b) {
+				var anr = a.get('nr');
+				var bnr = b.get('nr');
+				return ((anr < bnr) ? -1 : ((anr > bnr) ? 1 : 0));
+			});
+    },
+    add: function(obj) {
+		if (obj.nr === null)
+		{
+    		var arr = this.get('content');
+			arr.pushObject(obj);
+			arr = this.resetNumbers(arr);
+			this.set('content', arr);
+		}
+    },
+    update: function(obj) {
+    	var arr = this.get('content');
+		arr = this.removeByNr(arr, obj.get('nr'));
+		arr.pushObject(obj);
+		this.sort(arr);
+		this.set('content', arr);
+    }
+})
 
-
-/*
- * Controllers
- */
 App.accountController = Ember.ArrayController.create({
     content: [
     	null,
@@ -228,10 +286,6 @@ App.projectPhaseController = Ember.ArrayController.create({
 /*
  * Views
  */
-App.rootContainer = Ember.ContainerView.create({
-	childViews: []
-});
-
 App.MainPageView = Ember.View.extend({
 	templateName: 'main-page',
 	content: App.mainPage,
@@ -249,25 +303,16 @@ App.MainPageView = Ember.View.extend({
 
 App.EditView = Ember.View.extend({
 	content: null,
+	defaultFocusElement: null,
 	add: function() {
 		var model = this.get('content');
 		if (model.nr === null)
 		{
-			App.mainPage.expenses.pushObject(model);
+			App.expenseController.add(model);
 		}
 		else
 		{
-			App.mainPage.expenses = jQuery.grep(
-				App.mainPage.expenses,
-				function(n, i) {
-					return n.nr !== model.nr
-				});
-			App.mainPage.expenses.pushObject(model);
-			App.mainPage.expenses.sort(function(a, b) {
-					var anr = a.get('nr');
-					var bnr = b.get('nr');
-					return ((anr < bnr) ? -1 : ((anr > bnr) ? 1 : 0));
-				});
+			App.expenseController.update(model);
 		}
 		this.hide();
 	},
@@ -286,15 +331,27 @@ App.EditView = Ember.View.extend({
 	show: function() {
 		App.rootContainer.set('currentView', this);
 	},
+	isDisabled: function() {
+		var model = this.get('content');
+		return !model.isValid;
+	}.property('content.isValid'),
 	submitText: "Lägg till"
 });
 
 App.ExpenseEditView = App.EditView.extend({
-	templateName: 'expense-editor'
+	templateName: 'expense-editor',
+	didInsertElement: function() {
+	    this._super();
+	    this.$('select:first').focus();
+	}
 });
 
 App.RepresentationEditView = App.EditView.extend({
-	templateName: 'representation-editor'
+	templateName: 'representation-editor',
+	didInsertElement: function() {
+	    this._super();
+	    this.$('input:first').focus();
+	}
 });
 
 App.ExpenseListItemView = Ember.View.extend({

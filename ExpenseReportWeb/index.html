@@ -40,7 +40,7 @@
 					<div class="controls">
 						{{view Ember.Select
 							contentBinding="App.accountController"
-							selectionBinding="selectedAccount"
+							selectionBinding="selectedAccountValue"
 							optionLabelPath="content.name"
 							optionValuePath="content.nr" }}
 					</div>
@@ -67,7 +67,7 @@
 			</fieldset>
 		</form>
 		<div class="modal-footer">
-			<a href="#" class="btn btn-primary" {{action "add"}}>{{view.submitText}}</a>
+			<a href="#" class="btn btn-primary" {{bindAttr disabled="view.isDisabled"}} {{action "add"}}>{{view.submitText}}</a>
 			<a href="#" class="btn" {{action "cancel"}}>Avbryt</a>
 		</div>
 	</script>    
@@ -199,7 +199,7 @@
 				<th>Varav moms</th>
 			</thead>
 			<tbody id="tablebody">
-				{{#each view.content.expenses}}
+				{{#each App.expenseController}}
 					{{#view App.ExpenseListItemView contentBinding="this"}}
 						<tr>
 							<td>{{nr}}</td>
